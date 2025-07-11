@@ -1,5 +1,5 @@
-
 from variables import *
+import xml.etree.ElementTree as ET
 
 # Couleurs des 7 notes naturelles
 pitch_mod12_colors = {
@@ -40,37 +40,56 @@ elif concert_key < 0:
         flat = flats_order[i]
         base = flat_to_natural[flat]
         altered_notes[flat] = base
-# Si concertKey == 0, pas d'altération de contexte
 
 # Applique la couleur
 for note in root.findall('.//Note'):
     pitch_elem = note.find('pitch')
+    accidental_elem = note.find('Accidental')
     if pitch_elem is not None:
         try:
             pitch = int(pitch_elem.text)
             mod12 = pitch % 12
+            color_source = None
 
-            if mod12 in pitch_mod12_colors:
-                color_source = mod12
-            elif mod12 in altered_notes:
-                color_source = altered_notes[mod12]
-            elif mod12 in sharp_to_natural:
-                color_source = sharp_to_natural[mod12]
-            elif mod12 in flat_to_natural:
-                color_source = flat_to_natural[mod12]
+            if concert_key != 0:
+                # Si une altération est définie par la clé
+                if mod12 in pitch_mod12_colors:
+                    color_source = mod12
+                elif mod12 in altered_notes:
+                    color_source = altered_notes[mod12]
+                elif mod12 in sharp_to_natural:
+                    color_source = sharp_to_natural[mod12]
+                elif mod12 in flat_to_natural:
+                    color_source = flat_to_natural[mod12]
             else:
-                continue  # Pas de couleur trouvée
+                # Pas d'armure : on se base uniquement sur l'accidental
+                if accidental_elem is not None:
+                    subtype = accidental_elem.find('subtype')
+                    if subtype is not None:
+                        subtype_text = subtype.text
+                        if subtype_text == 'accidentalSharp':
+                            color_source = sharp_to_natural.get(mod12, mod12)
+                        elif subtype_text == 'accidentalFlat':
+                            color_source = flat_to_natural.get(mod12, mod12)
+                        else:
+                            color_source = mod12  # pour les autres cas (bécarre etc.)
+                    else:
+                        color_source = mod12
+                else:
+                    color_source = mod12  # note naturelle sans altération
 
-            r, g, b = pitch_mod12_colors[color_source]
-            color_elem = note.find('color')
-            if color_elem is None:
-                color_elem = ET.SubElement(note, 'color')
-            color_elem.attrib = {
-                'r': str(r),
-                'g': str(g),
-                'b': str(b),
-                'a': '255'
-            }
+            if color_source in pitch_mod12_colors:
+                r, g, b = pitch_mod12_colors[color_source]
+                color_elem = note.find('color')
+                if color_elem is None:
+                    color_elem = ET.SubElement(note, 'color')
+                color_elem.attrib = {
+                    'r': str(r),
+                    'g': str(g),
+                    'b': str(b),
+                    'a': '255'
+                }
+
         except (ValueError, KeyError):
             continue
 
