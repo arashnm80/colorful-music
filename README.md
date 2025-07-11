@@ -1,7 +1,8 @@
 # colorful-music
 
 ### how to use
-- install python
+- install python (downloadable from [here](https://www.python.org/downloads/))
+- install musescore (downloadable from [here](https://github.com/musescore/MuseScore/releases))
 - download a sheet music from [musescore](https://musescore.com/sheetmusic/free-download)
 - open the sheet music in musescore studio and save it as folder. a file with `.mscx` extension will appear in it
 - rename the `.mscx` file to `note.mscx` and put it beside python script
