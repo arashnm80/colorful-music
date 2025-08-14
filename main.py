@@ -1,25 +1,25 @@
 from variables import *
 
-# Couleurs des 7 notes naturelles
+# Colors of the 7 natural notes
 pitch_mod12_colors = colors_6
 
-# Ordres standards
+# Standard orders
 sharps_order = [6, 1, 8, 3, 10, 5, 0]  # F#, C#, G#, D#, A#, E#, B#
 flats_order  = [10, 3, 8, 1, 6, 11, 4] # Bb, Eb, Ab, Db, Gb, Cb, Fb
 
-# Mappings altérés → naturels
+# Mappings altered → natural
 sharp_to_natural = {x: (x - 1) % 12 for x in sharps_order}
 flat_to_natural  = {x: (x + 1) % 12 for x in flats_order}
 
-# Parse le fichier
+# Parse the file
 tree = ET.parse('note.mscx')
 root = tree.getroot()
 
-# Récupère la clé
+# Retrieve the key
 concert_key_elem = root.find('.//KeySig/concertKey')
 concert_key = int(concert_key_elem.text) if concert_key_elem is not None else 0
 
-# Notes altérées par la clé
+# Notes altered by the key
 altered_notes = {}
 if concert_key > 0:
     for i in range(concert_key):
@@ -32,7 +32,7 @@ elif concert_key < 0:
         base = flat_to_natural[flat]
         altered_notes[flat] = base
 
-# Applique la couleur par mesure
+# Apply color per measure
 for measure in root.findall('.//Measure'):
     accidental_map = {}  # clé : pitch mod12, valeur : type ('sharp', 'flat')
 
@@ -46,7 +46,7 @@ for measure in root.findall('.//Measure'):
                 mod12 = pitch % 12
                 color_source = None
 
-                # Détecter une nouvelle altération dans cette note
+                # Detect a new accidental in this note
                 new_accidental = None
                 if accidental_elem is not None:
                     subtype = accidental_elem.find('subtype')
@@ -59,7 +59,7 @@ for measure in root.findall('.//Measure'):
                         elif subtype_text == 'accidentalNatural':
                             new_accidental = 'natural'
 
-                # Met à jour l'état d'altération temporaire pour cette note
+                # Update the temporary accidental state for this note
                 if new_accidental == 'sharp':
                     accidental_map[mod12] = 'sharp'
                     color_source = sharp_to_natural.get(mod12, mod12)
@@ -70,7 +70,7 @@ for measure in root.findall('.//Measure'):
                     accidental_map.pop(mod12, None)
                     color_source = mod12
                 else:
-                    # Pas d'altération explicite → regarde l'état mémorisé
+                    # No explicit accidental → check the memorized state
                     if mod12 in accidental_map:
                         kind = accidental_map[mod12]
                         if kind == 'sharp':
@@ -78,9 +78,9 @@ for measure in root.findall('.//Measure'):
                         elif kind == 'flat':
                             color_source = flat_to_natural.get(mod12, mod12)
                     else:
-                        color_source = mod12  # naturelle
+                        color_source = mod12  # natural
 
-                # Applique la couleur
+                # Apply the color
                 if color_source in pitch_mod12_colors:
                     r, g, b = pitch_mod12_colors[color_source]
                     color_elem = note.find('color')
@@ -97,5 +97,5 @@ for measure in root.findall('.//Measure'):
                 print("error")
                 continue
 
-# Sauvegarde
+# Save
 tree.write('note_colored.mscx', encoding='utf-8', xml_declaration=True)
