@@ -57,11 +57,11 @@ colors_5 = {
 }
 
 colors_6 = {
-    0:  hex_to_rgb('#DC143C'),  # C - Crimson
-    2:  hex_to_rgb('#6D4F37'),  # D - Dark Chocolate
-    4:  hex_to_rgb('#6643db'),  # E - Eggplant
-    5:  hex_to_rgb('#FFA500'),  # F - Fox
-    7:  hex_to_rgb('#009E60'),  # G - Green
-    9:  hex_to_rgb('#00CEF1'),  # A - Aqua
-    11: hex_to_rgb('#1F51FF'),  # B - Blue
+    0:  hex_to_rgb('#DC143C'),   # C - Crimson        (r=220, g=20,  b=60)
+    2:  hex_to_rgb('#6D4F37'),   # D - Dark Chocolate (r=109, g=79,  b=55)
+    4:  hex_to_rgb('#6643db'),   # E - Eggplant       (r=102, g=67,  b=219)
+    5:  hex_to_rgb('#FFA500'),   # F - Fox            (r=255, g=165, b=0)
+    7:  hex_to_rgb('#009E60'),   # G - Green          (r=0,   g=158, b=96)
+    9:  hex_to_rgb('#00CEF1'),   # A - Aqua           (r=0,   g=206, b=241)
+    11: hex_to_rgb('#1F51FF'),   # B - Blue           (r=31,  g=81,  b=255)
 }
