@@ -59,8 +59,10 @@ for measure in root.findall('.//Measure'):
                         elif subtype_text == 'accidentalNatural':
                             new_accidental = 'natural'
 
-                # Update the temporary accidental state for this note
-                if new_accidental == 'sharp':
+                # Ensure sharp and flat notes are mapped to their base note
+                if mod12 in altered_notes:
+                    color_source = altered_notes[mod12]
+                elif new_accidental == 'sharp':
                     accidental_map[mod12] = 'sharp'
                     color_source = sharp_to_natural.get(mod12, mod12)
                 elif new_accidental == 'flat':
